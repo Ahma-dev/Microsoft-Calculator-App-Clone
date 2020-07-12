@@ -1,0 +1,26 @@
+
+body {
+    /* padding: 2rem 0; */
+    margin: 1rem auto;
+    
+}
+
+#results-n-nav {
+    height: 25vh;
+}
+
+#inputs {
+    height: 65vh;
+}
+
+.inputs-div {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 3px;
+}
+
+.inputs-div button {
+    border: none;
+}
