@@ -17,6 +17,10 @@ body {
   background: rgb(240, 240, 240);
 }
 
+button:focus {
+  outline: none;
+}
+
 header {
   display: flex;
   align-items: center;
@@ -72,11 +76,13 @@ header div h1 {
 .live-input-display {
   height: 20%;
   margin: 0;
+  /* caret-color: transparent;
+  font: inherit; */
+
 }
 
 .answer-display {
   height: 80%;
-  width: 100%;
   caret-color: transparent;
   font: inherit;
   font-size: 3rem;
@@ -85,6 +91,10 @@ header div h1 {
 
 .live-input-display, .answer-display {
   text-align: right;
+  caret-color: transparent;
+  font: inherit;
+  width: 100%;
+
 }
 
 #inputs {
