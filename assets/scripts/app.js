@@ -30,7 +30,7 @@ let enteredValue = "";
 let prevCalcValue;
 let prevOperator;
 let liveInput = "";
-let operatorBtn
+let prevOperatorDisplayed; // To calculate final answer when equalsBtn ShowFinalAnswerHandler function is triggered
 
 const numButtons = [
   btn0,
@@ -76,9 +76,11 @@ const performCalc = function () {
 };
 
 const performCalcHandler = function () {
+  console.log("triggered")
   // Does some if checks and the call performCalc() which carries out the calculation
   let liveInputCurrentValue = currentValue;
-  operatorBtn = this;
+  // operatorBtn = this;
+  console.log(this)
   if (!prevOperator) {
     prevOperator = this.value;
   }
@@ -91,6 +93,7 @@ const performCalcHandler = function () {
   } else {
     if (currentValue === "" && this.value !== prevOperator) {
       prevOperator = this.value;
+      showLiveInput(prevOperator, liveInputCurrentValue);
       return;
     } else if (currentValue === "") {
       return;
@@ -139,18 +142,28 @@ const numButtonHandler = function (btn) {
 };
 
 const showLiveInput = function (operator, liveInputCurrentValue) { //debug value shown
-  liveInput = `${liveInput} ${liveInputCurrentValue} ${operator}`;
-  liveInputDisplay.value = liveInput;
+  console.log(liveInputDisplay.value)
+  let currentDisplay = liveInputDisplay.value
+  if (currentValue === "" && operator !== (currentDisplay.slice(currentDisplay.length - 1, currentDisplay.length))) {
+    console.log("inhere")
+    liveInput = liveInput.slice(0, liveInput.length - 1) + operator;
+    liveInputDisplay.value = liveInput;  
+    // return 
+  } else {
+    liveInput = `${liveInput} ${liveInputCurrentValue} ${operator}`;
+    liveInputDisplay.value = liveInput;
+    prevOperatorDisplayed = operator;
+  }
 };
 
-const showFinalAnswer = function() { // only shows final answer when equals sign is triggered
+const showFinalAnswerHandler = function() { // only shows final answer when equals sign is triggered
   currentValue = answerDisplay.value
-  performCalcHandler.call(operatorBtn);
+  performCalcHandler.call(prevOperatorDisplayed);
   liveInputDisplay.value = ""; // Stopped here
   liveInput = "";
   prevCalcValue = "";
   prevOperator = "";
-  // currentValue = "";
+  currentValue = "";
 }
 
 numButtons.forEach((btn, index, numButtons) => {
@@ -158,9 +171,9 @@ numButtons.forEach((btn, index, numButtons) => {
 });
 
 operatorbuttons.forEach((btn, index, operatorbuttons) => {
-  btn.addEventListener("click", performCalcHandler.bind(btn));
+  btn.addEventListener("click", performCalcHandler);// Removed .bind(btn)
 });
 
 clearInputBtn.addEventListener("click", clearInputHandler);
 
-equalsBtn.addEventListener("click", showFinalAnswer);
+equalsBtn.addEventListener("click", showFinalAnswerHandler);
