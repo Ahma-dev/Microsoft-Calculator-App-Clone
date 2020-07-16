@@ -5,7 +5,7 @@ const squareRootBtn = document.getElementById("square-root-btn");
 const power2Btn = document.getElementById("power-2-btn");
 const inverseBtn = document.getElementById("inverse-btn");
 const clearInputBtn = document.getElementById("clear-input-btn");
-const clearEntryBtn = document.getElementById("reset-calc-btn");
+const calcResetBtn = document.getElementById("reset-calc-btn");
 const deleteBtn = document.getElementById("delete-btn");
 const divideBtn = document.getElementById("divide-btn");
 const multiplyBtn = document.getElementById("multiply-btn");
@@ -25,12 +25,15 @@ const btn7 = document.getElementById("btn-7");
 const btn8 = document.getElementById("btn-8");
 const btn9 = document.getElementById("btn-9");
 
+const greetingElement = document.querySelector(".greeting");
+
 let currentValue = "";
 let enteredValue = "";
 let prevCalcValue;
 let prevOperator;
 let liveInput = "";
 let prevOperatorDisplayed; // To calculate final answer when equalsBtn ShowFinalAnswerHandler function is triggered
+
 
 const numButtons = [
   btn0,
@@ -52,11 +55,26 @@ const operatorbuttons = [
   multiplyBtn,
   divideBtn,
   subtractBtn,
+];
+
+const specialButtons = [
   percentageBtn,
   squareRootBtn,
   power2Btn,
   inverseBtn,
-];
+]
+
+const date = new Date();
+const hour = date.getHours();
+
+if (hour < 12) {
+  greetingElement.textContent = "Hey, Good Morning"
+} else if (hour < 18) {
+  greetingElement.textContent = "Hey, Good Afternoon"
+} else {
+  greetingElement.textContent = "Hey, Good Evening"
+}
+
 
 const clearInputHandler = function () {
   answerDisplay.value = "";
@@ -70,27 +88,30 @@ const performCalc = function () {
     currentValue = prevCalcValue - currentValue;
   } else if (prevOperator === "/") {
     currentValue = prevCalcValue / currentValue;
-  } else if (prevOperator === "X") {
+  } else {
     currentValue = prevCalcValue * currentValue;
   }
 };
 
 const performCalcHandler = function () {
-  console.log("triggered")
+  console.log("triggered");
   // Does some if checks and the call performCalc() which carries out the calculation
   let liveInputCurrentValue = currentValue;
   // operatorBtn = this;
-  console.log(this)
+  console.log(this);
   if (!prevOperator) {
     prevOperator = this.value;
   }
 
   if (!prevCalcValue && prevCalcValue !== 0) {
+    console.log("here1");
+    prevOperator = this.value;
     prevCalcValue = parseFloat(currentValue);
     showLiveInput(prevOperator, liveInputCurrentValue);
     currentValue = "";
     return;
   } else {
+    console.log("here2");
     if (currentValue === "" && this.value !== prevOperator) {
       prevOperator = this.value;
       showLiveInput(prevOperator, liveInputCurrentValue);
@@ -106,6 +127,7 @@ const performCalcHandler = function () {
   prevOperator = this.value;
   prevCalcValue = currentValue;
   answerDisplay.value = prevCalcValue;
+  console.log("here3");
   showLiveInput(prevOperator, liveInputCurrentValue);
   currentValue = "";
 };
@@ -124,9 +146,15 @@ const displayInput = (inputValue) => {
         ? `${currentValue}${enteredValue}`
         : `0${currentValue}${enteredValue}`;
   } else if (enteredValue === "+-") {
-    currentValue = currentValue.includes("-")
+    console.log("in-here")
+    if (!currentValue) {
+      currentValue = prevCalcValue.toString();
+    }
+    currentValue = 
+    currentValue.includes("-")
       ? currentValue.replace("-", "")
       : `-${currentValue}`;
+
   } else {
     currentValue = `${currentValue}${enteredValue}`;
   }
@@ -141,14 +169,21 @@ const numButtonHandler = function (btn) {
   displayInput(enteredValue);
 };
 
-const showLiveInput = function (operator, liveInputCurrentValue) { //debug value shown
-  console.log(liveInputDisplay.value)
-  let currentDisplay = liveInputDisplay.value
-  if (currentValue === "" && operator !== (currentDisplay.slice(currentDisplay.length - 1, currentDisplay.length))) {
-    console.log("inhere")
+const showLiveInput = function (operator, liveInputCurrentValue) {
+  console.log(liveInputDisplay.value);
+
+  let currentDisplay = liveInputDisplay.value;
+  if (!prevCalcValue && prevCalcValue !== 0) {
+    return;
+  }
+  if (
+    currentValue === "" &&
+    operator !==
+      currentDisplay.slice(currentDisplay.length - 1, currentDisplay.length)
+  ) {
+    console.log("inhere");
     liveInput = liveInput.slice(0, liveInput.length - 1) + operator;
-    liveInputDisplay.value = liveInput;  
-    // return 
+    liveInputDisplay.value = liveInput;
   } else {
     liveInput = `${liveInput} ${liveInputCurrentValue} ${operator}`;
     liveInputDisplay.value = liveInput;
@@ -156,14 +191,29 @@ const showLiveInput = function (operator, liveInputCurrentValue) { //debug value
   }
 };
 
-const showFinalAnswerHandler = function() { // only shows final answer when equals sign is triggered
-  currentValue = answerDisplay.value
+const showFinalAnswerHandler = function () {
+  // only shows final answer when equals sign is triggered
+  currentValue = answerDisplay.value;
   performCalcHandler.call(prevOperatorDisplayed);
   liveInputDisplay.value = ""; // Stopped here
   liveInput = "";
   prevCalcValue = "";
   prevOperator = "";
   currentValue = "";
+};
+
+const calcResetHandler = function() {
+  liveInputDisplay.value = ""; // Stopped here
+  liveInput = "";
+  prevCalcValue = "";
+  prevOperator = "";
+  currentValue = "";
+  answerDisplay.value = "";
+}
+
+const deleteHandler = function() {
+  currentValue = currentValue.slice(0, currentValue.length - 1)
+  answerDisplay.value = currentValue;
 }
 
 numButtons.forEach((btn, index, numButtons) => {
@@ -171,9 +221,11 @@ numButtons.forEach((btn, index, numButtons) => {
 });
 
 operatorbuttons.forEach((btn, index, operatorbuttons) => {
-  btn.addEventListener("click", performCalcHandler);// Removed .bind(btn)
+  btn.addEventListener("click", performCalcHandler); // Removed .bind(btn)
 });
 
 clearInputBtn.addEventListener("click", clearInputHandler);
 
 equalsBtn.addEventListener("click", showFinalAnswerHandler);
+calcResetBtn.addEventListener("click", calcResetHandler)
+deleteBtn.addEventListener("click", deleteHandler)
